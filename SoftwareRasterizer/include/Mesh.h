@@ -39,5 +39,6 @@ namespace SR
     {
     public:
         static Mesh CreateCube(float halfExtent = 0.5f);
+        static bool LoadFromFile(const std::string& path, Mesh& outMesh);
     };
 }

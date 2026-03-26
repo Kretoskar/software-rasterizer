@@ -18,7 +18,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR, int nCmdShow)
 
     float angle = 0.0f;
     
-    SR::Mesh mesh = SR::MeshFactory::CreateCube();
+    SR::Mesh mesh;
+    SR::MeshFactory::LoadFromFile("../assets/dog.obj", mesh);
 
     mesh.color = SR::Color32::FromRGBA(255, 180, 40, 255);
     
@@ -34,7 +35,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR, int nCmdShow)
 
         const SR::Mat4 model =
             SR::Mat4::Translation(0.0f, 0.0f, 3.0f) *
-            SR::Mat4::RotationY(angle);
+            SR::Mat4::RotationY(angle) * 
+            SR::Mat4::Scale(0.1f, 0.1f, 0.1f);
 
         const SR::Mat4 view = SR::Mat4::Identity();
         const SR::Mat4 projection = SR::Mat4::Perspective(90.0f, aspect, 0.1f, 100.0f);

@@ -81,4 +81,12 @@ namespace SR
         0xFFBDC9D2, 0xFF9FA064, 0xFFBE4700, 0xFF658188, 0xFF83A485, 0xFF453C23, 0xFF47675D, 0xFF3A3F00,
         0xFF061203, 0xFFDFFB71, 0xFF868E7E, 0xFF98D058, 0xFF6C8F7D, 0xFFD7BFC2, 0xFF3C3E6E, 0xFF000000,
     };
+    
+    static constexpr size_t CIEDE2000_COLORS_COUNT =
+        sizeof(CIEDE2000_COLORS) / sizeof(CIEDE2000_COLORS[0]);
+
+    static Color32 GetCiede2000Color(size_t i)
+    {
+        return CIEDE2000_COLORS[i % CIEDE2000_COLORS_COUNT];
+    }
 }
