@@ -1,5 +1,6 @@
 #pragma once
 
+#define NOMINMAX
 #include <windows.h>
 #include <cstdint>
 
@@ -43,9 +44,9 @@ namespace SR
         WindowCoord _height = 0;
         
         // stride to get to next element in _memory
-        i16 _stride = 0;
+        i32 _stride = 0;
         // stride to get to next element in _pixels
-        i16 _stridePixels = 0;
+        i32 _stridePixels = 0;
         
         // format description of backbuffer for Win32
         BITMAPINFO _info = {};

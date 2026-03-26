@@ -50,7 +50,7 @@ void Backbuffer::PutPixel(WindowCoord x, WindowCoord y, Color32 color)
     {
         return;
     }
-    if (x < 0 || y < 0 || x >= _width || y >= _height)
+    if (x >= _width || y >= _height)
     {
         return;
     }
