@@ -4,6 +4,7 @@
 
 #include "BackBuffer.h"
 #include "Color.h"
+#include "Mesh.h"
 #include "SRMath.h"
 
 namespace SR
@@ -28,6 +29,8 @@ namespace SR
             const Triangle& triangle,
             const Mat4& model, 
             const Mat4& viewProjection);
+        
+        void DrawMesh(const Mesh& mesh, const Mat4& model, const Mat4& viewProjection);
 
     private:
         struct ScreenVertex

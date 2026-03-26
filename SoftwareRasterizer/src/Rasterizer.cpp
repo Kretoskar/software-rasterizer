@@ -83,6 +83,33 @@ void Rasterizer::DrawTriangle(const Triangle& triangle, const Mat4& model, const
     }
 }
 
+void Rasterizer::DrawMesh(const Mesh& mesh, const Mat4& model, const Mat4& viewProjection)
+{
+    if (!mesh.IsValid())
+    {
+        return;
+    }
+
+    Triangle triangle;
+    
+
+    const size_t triangleCount = mesh.GetTriangleCount();
+    for (size_t i = 0; i < triangleCount; ++i)
+    {
+        const u32 i0 = mesh.indices[i * 3 + 0];
+        const u32 i1 = mesh.indices[i * 3 + 1];
+        const u32 i2 = mesh.indices[i * 3 + 2];
+
+        triangle.v0 = mesh.GetPosition(i0);
+        triangle.v1 = mesh.GetPosition(i1);
+        triangle.v2 = mesh.GetPosition(i2);
+        triangle.color = CIEDE2000_COLORS[i];
+
+        // TODO: actual SOA version
+        DrawTriangle(triangle, model, viewProjection);
+    }
+}
+
 bool Rasterizer::TransformToScreen(const Vec3& vertex, const Mat4& mvp, ScreenVertex& out) const
 {
     const Vec4 clip = mvp * ToVec4(vertex, 1.0f);
