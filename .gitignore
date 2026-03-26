@@ -2,3 +2,8 @@
 *.vcxproj
 
 *.sln
+
+.idea/.idea.SR/.idea/
+
+bin/
+obj/
