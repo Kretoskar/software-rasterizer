@@ -32,6 +32,21 @@ Mat4 Mat4::Scale(float x, float y, float z)
     return result;
 }
 
+Mat4 Mat4::RotationX(float angleRadians)
+{
+    Mat4 result = Identity();
+
+    const float c = std::cos(angleRadians);
+    const float s = std::sin(angleRadians);
+
+    result.m[1][1] =  c;
+    result.m[1][2] = -s;
+    result.m[2][1] =  s;
+    result.m[2][2] =  c;
+
+    return result;
+}
+
 Mat4 Mat4::RotationY(float angleRadians)
 {
     Mat4 result = Identity();
@@ -45,6 +60,30 @@ Mat4 Mat4::RotationY(float angleRadians)
     result.m[2][2] =  c;
 
     return result;
+}
+
+Mat4 Mat4::RotationZ(float angleRadians)
+{
+    Mat4 result = Identity();
+
+    const float c = std::cos(angleRadians);
+    const float s = std::sin(angleRadians);
+
+    result.m[0][0] =  c;
+    result.m[0][1] = -s;
+    result.m[1][0] =  s;
+    result.m[1][1] =  c;
+
+    return result;
+}
+
+Mat4 Mat4::RotationXYZ(float xRadians, float yRadians, float zRadians)
+{
+    Mat4 rx = RotationX(xRadians);
+    Mat4 ry = RotationY(yRadians);
+    Mat4 rz = RotationZ(zRadians);
+    
+    return rz * ry * rx;
 }
 
 Mat4 Mat4::Perspective(float fovDegrees, float aspect, float nearPlane, float farPlane)

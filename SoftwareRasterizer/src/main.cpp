@@ -34,8 +34,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR, int nCmdShow)
         const float aspect = (height > 0.0f) ? (width / height) : 1.0f;
 
         const SR::Mat4 model =
-            SR::Mat4::Translation(0.0f, 0.0f, 3.0f) *
-            SR::Mat4::RotationY(angle) * 
+            SR::Mat4::Translation(0.0f, -1.5f, 5.0f) *
+            SR::Mat4::RotationXYZ(SR::Deg2Rad(-90.0f), angle, 0.0f) *
             SR::Mat4::Scale(0.1f, 0.1f, 0.1f);
 
         const SR::Mat4 view = SR::Mat4::Identity();
@@ -45,7 +45,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR, int nCmdShow)
         rasterizer.DrawMesh(mesh, model, viewProjection);
 
         window.Present();
-        angle += 0.01f;
+        angle += 0.02f;
     }
 
     return 0;

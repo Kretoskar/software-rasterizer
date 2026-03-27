@@ -39,7 +39,10 @@ namespace SR
         static Mat4 Identity();
         static Mat4 Translation(float x, float y, float z);
         static Mat4 Scale(float x, float y, float z);
+        static Mat4 RotationX(float angleRadians);
         static Mat4 RotationY(float angleRadians);
+        static Mat4 RotationZ(float angleRadians);
+        static Mat4 RotationXYZ(float xRadians, float yRadians, float zRadians);
         static Mat4 Perspective(float fovDegrees, float aspect, float nearPlane, float farPlane);
     };
 
