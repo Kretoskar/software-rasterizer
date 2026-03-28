@@ -100,9 +100,9 @@ void Rasterizer::DrawMesh(const Mesh& mesh, const Mat4& model, const Mat4& viewP
         const u32 i1 = mesh.indices[i * 3 + 1];
         const u32 i2 = mesh.indices[i * 3 + 2];
 
-        triangle.v0 = mesh.GetPosition(i0);
-        triangle.v1 = mesh.GetPosition(i1);
-        triangle.v2 = mesh.GetPosition(i2);
+        triangle.v0 = mesh.positions[i0];
+        triangle.v1 = mesh.positions[i1];
+        triangle.v2 = mesh.positions[i2];
         triangle.color = GetCiede2000Color(i);
 
         // TODO: actual SOA version

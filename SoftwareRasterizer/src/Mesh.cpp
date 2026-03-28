@@ -43,15 +43,15 @@ namespace
 
 void Mesh::Clear()
 {
-    positionsX.clear();
-    positionsY.clear();
-    positionsZ.clear();
+    positions.clear();
+    positions.clear();
+    positions.clear();
     indices.clear();
 }
 
 size_t Mesh::GetVertexCount() const
 {
-    return positionsX.size();
+    return positions.size();
 }
 
 size_t Mesh::GetTriangleCount() const
@@ -61,73 +61,7 @@ size_t Mesh::GetTriangleCount() const
 
 bool Mesh::IsValid() const
 {
-    return positionsX.size() == positionsY.size() &&
-       positionsY.size() == positionsZ.size() &&
-       (indices.size() % 3) == 0;
-}
-
-Vec3 Mesh::GetPosition(uint32_t index) const
-{
-    return
-    {
-        positionsX[index],
-        positionsY[index],
-        positionsZ[index]
-    };
-}
-
-Mesh MeshFactory::CreateCube(float halfExtent)
-{
-    Mesh mesh;
-    
-    mesh.positionsX =
-    {
-        -halfExtent,  halfExtent,  halfExtent, -halfExtent,   // 0,1,2,3 back face
-        -halfExtent,  halfExtent,  halfExtent, -halfExtent    // 4,5,6,7 front face
-    };
-
-    mesh.positionsY =
-    {
-        -halfExtent, -halfExtent,  halfExtent,  halfExtent,
-        -halfExtent, -halfExtent,  halfExtent,  halfExtent
-    };
-
-    mesh.positionsZ =
-    {
-        -halfExtent, -halfExtent, -halfExtent, -halfExtent,
-         halfExtent,  halfExtent,  halfExtent,  halfExtent
-    };
-
-    // 12 triangles, counter-clockwise when viewed from outside
-    mesh.indices =
-    {
-        // Front  (+Z)
-        4, 5, 6,
-        4, 6, 7,
-
-        // Back   (-Z)
-        1, 0, 3,
-        1, 3, 2,
-
-        // Left   (-X)
-        0, 4, 7,
-        0, 7, 3,
-
-        // Right  (+X)
-        5, 1, 2,
-        5, 2, 6,
-
-        // Top    (+Y)
-        3, 7, 6,
-        3, 6, 2,
-
-        // Bottom (-Y)
-        0, 1, 5,
-        0, 5, 4
-    };
-
-    mesh.color = Color32::FromRGBA(255, 180, 40, 255);
-    return mesh;
+    return (indices.size() % 3) == 0;
 }
 
 bool MeshFactory::LoadFromFile(const std::string& path, Mesh& outMesh)
@@ -139,10 +73,8 @@ bool MeshFactory::LoadFromFile(const std::string& path, Mesh& outMesh)
     }
 
     Mesh mesh;
-    mesh.positionsX.reserve(16384);
-    mesh.positionsY.reserve(16384);
-    mesh.positionsZ.reserve(16384);
-
+    mesh.positions.reserve(16384);
+    
     std::string line;
     while (std::getline(file, line))
     {
@@ -162,9 +94,7 @@ bool MeshFactory::LoadFromFile(const std::string& path, Mesh& outMesh)
             float z = 0.0f;
             stream >> x >> y >> z;
 
-            mesh.positionsX.push_back(x);
-            mesh.positionsY.push_back(y);
-            mesh.positionsZ.push_back(z);
+            mesh.positions.emplace_back(x,y,z);
         }
         else if (prefix == "f")
         {
