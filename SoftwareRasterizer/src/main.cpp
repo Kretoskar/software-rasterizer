@@ -6,6 +6,7 @@
 #include <vector>
 #include <numeric>
 #include <sstream>
+#include <iomanip>
 
 #include "Rasterizer.h"
 #include "Types.h"
@@ -84,10 +85,14 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR, int nCmdShow)
     {
         double totalMs = std::accumulate(frameTimesMs.begin(), frameTimesMs.end(), 0.0);
         double averageMs = totalMs / static_cast<double>(frameTimesMs.size());
+        
+        double averageFpsFromAverageMs = (averageMs > 0.0) ? (1000.0 / averageMs) : 0.0;
 
         std::ostringstream oss;
+        oss << std::fixed << std::setprecision(2);
         oss << "Frames: " << frameTimesMs.size() << "\n"
-            << "Average frame time: " << averageMs << " ms\n";
+            << "Average frame time: " << averageMs << " ms\n"
+            << "Average FPS: " << averageFpsFromAverageMs << "\n";
 
         MessageBoxA(nullptr, oss.str().c_str(), "Frame Timing", MB_OK);
     }
