@@ -31,7 +31,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR, int nCmdShow)
 
     std::random_device rd;
     std::mt19937 gen(rd());
-    std::uniform_real_distribution<float> dist(-1.0f, 1.0f);
+    std::uniform_real_distribution<float> dist(-10.0f, 10.0f);
 
     float rand[100];
     for (float& x : rand)
@@ -65,10 +65,15 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR, int nCmdShow)
         const SR::Mat4 projection = SR::Mat4::Perspective(90.0f, aspect, 0.1f, 100.0f);
         const SR::Mat4 viewProjection = projection * view;
 
-        for (float i : rand)
+        const SR::Mat4 baseModel =
+               SR::Mat4::Translation(0.0f, 0.0f, 20.0f) *
+               SR::Mat4::RotationXYZ(SR::Deg2Rad(-90.0f), angle, 0.0f) *
+               SR::Mat4::Scale(0.1f, 0.1f, 0.1f);
+
+        for (u32 i = 0; i < 100; ++i)
         {
-            model = SR::Mat4::Translation(i, 0.0f, 0.0f) * model;
-            mesh.FillScreenPositions(viewProjection * model, buffer);
+            const SR::Mat4 instanceModel = SR::Mat4::Translation(rand[i], rand[100-i], 0.0f) * baseModel;
+            mesh.FillScreenPositions(viewProjection * instanceModel, buffer);
             rasterizer.DrawMesh(mesh);
         }
 
