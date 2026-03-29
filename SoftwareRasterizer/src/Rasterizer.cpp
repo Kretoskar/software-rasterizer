@@ -11,28 +11,17 @@ void Rasterizer::BeginFrame()
     std::fill(_depthBuffer.begin(), _depthBuffer.end(), std::numeric_limits<float>::infinity());
 }
 
-void Rasterizer::DrawTriangle(const Triangle& triangle, const Mat4& model, const Mat4& viewProjection)
+void Rasterizer::DrawTriangle(const ScreenVertex& p0, const ScreenVertex& p1, const ScreenVertex& p2, Color32 color)
 {
+    if (!p0.valid || !p1.valid || !p2.valid)
+    {
+        return;
+    }
+    
     const u32 width = _backbuffer.GetWidth();
     const u32 height = _backbuffer.GetHeight();
 
     if (width == 0 || height == 0)
-    {
-        return;
-    }
-
-    Mat4 mvp = viewProjection * model;
-    
-    ScreenVertex p0;
-    ScreenVertex p1;
-    ScreenVertex p2;
-
-    // Transform each triangle vertex from 3D model space into screen space
-    Mesh::TransformToScreen(triangle.v0, mvp, _backbuffer, p0);
-    Mesh::TransformToScreen(triangle.v1, mvp, _backbuffer, p1);
-    Mesh::TransformToScreen(triangle.v2, mvp, _backbuffer, p2);
-    
-    if (!p0.valid || !p1.valid || !p2.valid)
     {
         return;
     }
@@ -82,21 +71,18 @@ void Rasterizer::DrawTriangle(const Triangle& triangle, const Mat4& model, const
             if (depth < _depthBuffer[index])
             {
                 _depthBuffer[index] = depth;
-                _backbuffer.PutPixel(static_cast<u32>(x), static_cast<u32>(y), triangle.color);
+                _backbuffer.PutPixel(static_cast<u32>(x), static_cast<u32>(y), color);
             }
         }
     }
 }
 
-void Rasterizer::DrawMesh(const Mesh& mesh, const Mat4& model, const Mat4& viewProjection)
+void Rasterizer::DrawMesh(const Mesh& mesh)
 {
     if (!mesh.IsValid())
     {
         return;
     }
-
-    Triangle triangle;
-    
 
     const size_t triangleCount = mesh.GetTriangleCount();
     for (size_t i = 0; i < triangleCount; ++i)
@@ -105,13 +91,8 @@ void Rasterizer::DrawMesh(const Mesh& mesh, const Mat4& model, const Mat4& viewP
         const u32 i1 = mesh.indices[i * 3 + 1];
         const u32 i2 = mesh.indices[i * 3 + 2];
 
-        triangle.v0 = mesh.positions[i0];
-        triangle.v1 = mesh.positions[i1];
-        triangle.v2 = mesh.positions[i2];
-        triangle.color = GetCiede2000Color(i);
-
         // TODO: actual SOA version
-        DrawTriangle(triangle, model, viewProjection);
+        DrawTriangle(mesh.screnPositions[i0], mesh.screnPositions[i1], mesh.screnPositions[i2], GetCiede2000Color(i));
     }
 }
 

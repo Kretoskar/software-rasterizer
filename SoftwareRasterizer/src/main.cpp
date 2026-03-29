@@ -65,12 +65,11 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR, int nCmdShow)
         const SR::Mat4 projection = SR::Mat4::Perspective(90.0f, aspect, 0.1f, 100.0f);
         const SR::Mat4 viewProjection = projection * view;
 
-        rasterizer.DrawMesh(mesh, model, viewProjection);
-
         for (float i : rand)
         {
             model = SR::Mat4::Translation(i, 0.0f, 0.0f) * model;
-            rasterizer.DrawMesh(mesh, model, viewProjection);
+            mesh.FillScreenPositions(viewProjection * model, buffer);
+            rasterizer.DrawMesh(mesh);
         }
 
         window.Present();

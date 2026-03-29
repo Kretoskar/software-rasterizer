@@ -25,12 +25,9 @@ namespace SR
 
         void BeginFrame();
 
-        void DrawTriangle(
-            const Triangle& triangle,
-            const Mat4& model, 
-            const Mat4& viewProjection);
+        void DrawTriangle(const ScreenVertex& p0, const ScreenVertex& p1, const ScreenVertex& p2, Color32 color);
         
-        void DrawMesh(const Mesh& mesh, const Mat4& model, const Mat4& viewProjection);
+        void DrawMesh(const Mesh& mesh);
 
     private:
         float EdgeFunction(float ax, float ay, float bx, float by, float px, float py) const;

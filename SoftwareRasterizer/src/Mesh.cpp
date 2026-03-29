@@ -144,6 +144,7 @@ bool MeshFactory::LoadFromFile(const std::string& path, Mesh& outMesh)
             stream >> x >> y >> z;
 
             mesh.positions.emplace_back(x,y,z);
+            mesh.screnPositions.emplace_back();
         }
         else if (prefix == "f")
         {
