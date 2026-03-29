@@ -27,9 +27,12 @@ void Rasterizer::DrawTriangle(const Triangle& triangle, const Mat4& model, const
     ScreenVertex p1;
     ScreenVertex p2;
 
-    if (!TransformToScreen(triangle.v0, mvp, p0) ||
-        !TransformToScreen(triangle.v1, mvp, p1) ||
-        !TransformToScreen(triangle.v2, mvp, p2))
+    // Transform each triangle vertex from 3D model space into screen space
+    Mesh::TransformToScreen(triangle.v0, mvp, _backbuffer, p0);
+    Mesh::TransformToScreen(triangle.v1, mvp, _backbuffer, p1);
+    Mesh::TransformToScreen(triangle.v2, mvp, _backbuffer, p2);
+    
+    if (!p0.valid || !p1.valid || !p2.valid)
     {
         return;
     }
@@ -40,6 +43,7 @@ void Rasterizer::DrawTriangle(const Triangle& triangle, const Mat4& model, const
         return;
     }
 
+    // Compute AABB
     const i32 minX = std::max(0, static_cast<i32>(std::floor(std::min({ p0.x, p1.x, p2.x }))));
     const i32 minY = std::max(0, static_cast<i32>(std::floor(std::min({ p0.y, p1.y, p2.y }))));
     const i32 maxX = std::min(static_cast<i32>(width) - 1,  static_cast<i32>(std::ceil(std::max({ p0.x, p1.x, p2.x }))));
@@ -54,6 +58,7 @@ void Rasterizer::DrawTriangle(const Triangle& triangle, const Mat4& model, const
             const float px = static_cast<float>(x) + 0.5f;
             const float py = static_cast<float>(y) + 0.5f;
 
+            // Check on which side of edges is the pixel
             const float w0 = EdgeFunction(p1.x, p1.y, p2.x, p2.y, px, py);
             const float w1 = EdgeFunction(p2.x, p2.y, p0.x, p0.y, px, py);
             const float w2 = EdgeFunction(p0.x, p0.y, p1.x, p1.y, px, py);
@@ -108,43 +113,6 @@ void Rasterizer::DrawMesh(const Mesh& mesh, const Mat4& model, const Mat4& viewP
         // TODO: actual SOA version
         DrawTriangle(triangle, model, viewProjection);
     }
-}
-
-bool Rasterizer::TransformToScreen(const Vec3& vertex, const Mat4& mvp, ScreenVertex& out) const
-{
-    const Vec4 clip = mvp * ToVec4(vertex, 1.0f);
-
-    if (clip.w <= 0.0f)
-    {
-        return false;
-    }
-
-    const float invW = 1.0f / clip.w;
-
-    const float ndcX = clip.x * invW;
-    const float ndcY = clip.y * invW;
-    const float ndcZ = clip.z * invW;
-
-    // Minimal reject
-    if (ndcX < -1.5f || ndcX > 1.5f ||
-        ndcY < -1.5f || ndcY > 1.5f ||
-        ndcZ < 0.0f  || ndcZ > 1.0f)
-    {
-        // allow a bit of xy overflow, but not triangles obviously outside screen
-        if (ndcZ < 0.0f || ndcZ > 1.0f)
-        {
-            return false;
-        }
-    }
-
-    const float width = static_cast<float>(_backbuffer.GetWidth());
-    const float height = static_cast<float>(_backbuffer.GetHeight());
-
-    out.x = (ndcX * 0.5f + 0.5f) * width;
-    out.y = (-ndcY * 0.5f + 0.5f) * height;
-    out.depth = ndcZ;
-
-    return true;
 }
 
 float Rasterizer::EdgeFunction(float ax, float ay, float bx, float by, float px, float py) const

@@ -64,6 +64,54 @@ bool Mesh::IsValid() const
     return (indices.size() % 3) == 0;
 }
 
+void Mesh::FillScreenPositions(const Mat4& mvp, const Backbuffer& backbuffer)
+{
+    for (u32 i = 0; i < positions.size(); ++i)
+    {
+        TransformToScreen(positions[i], mvp, backbuffer, screnPositions[i]);
+    }
+}
+
+void Mesh::TransformToScreen(const Vec3& vertex, const Mat4& mvp, const Backbuffer& backbuffer, ScreenVertex& out)
+{
+    out.valid = true;
+    const Vec4 clip = mvp * ToVec4(vertex, 1.0f);
+
+    // Vertex is on or behind the camera plane in clip space, so cannot be projected correctly
+    if (clip.w <= 0.0f)
+    {
+        out.valid = false;
+        return;
+    }
+
+    const float invW = 1.0f / clip.w;
+
+    // Convert from clip space to Normalized Device Coordinates
+    const float ndcX = clip.x * invW;
+    const float ndcY = clip.y * invW;
+    const float ndcZ = clip.z * invW;
+
+    // Minimal reject
+    if (ndcX < -1.5f || ndcX > 1.5f ||
+        ndcY < -1.5f || ndcY > 1.5f ||
+        ndcZ < 0.0f  || ndcZ > 1.0f)
+    {
+        // allow a bit of xy overflow, but not invalid depth
+        if (ndcZ < 0.0f || ndcZ > 1.0f)
+        {
+            out.valid = false;
+            return;
+        }
+    }
+
+    const float width = static_cast<float>(backbuffer.GetWidth());
+    const float height = static_cast<float>(backbuffer.GetHeight());
+
+    out.x = (ndcX * 0.5f + 0.5f) * width;
+    out.y = (-ndcY * 0.5f + 0.5f) * height;
+    out.depth = ndcZ;
+}
+
 bool MeshFactory::LoadFromFile(const std::string& path, Mesh& outMesh)
 {
     std::ifstream file(path);
@@ -74,6 +122,7 @@ bool MeshFactory::LoadFromFile(const std::string& path, Mesh& outMesh)
 
     Mesh mesh;
     mesh.positions.reserve(16384);
+    mesh.screnPositions.reserve(16384);
     
     std::string line;
     while (std::getline(file, line))
