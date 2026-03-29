@@ -27,7 +27,7 @@ void Rasterizer::DrawTriangle(const ScreenVertex& p0, const ScreenVertex& p1, co
     }
 
     const float area = EdgeFunction(p0.x, p0.y, p1.x, p1.y, p2.x, p2.y);
-    if (area == 0.0f)
+    if (area <= 0.0f)
     {
         return;
     }
